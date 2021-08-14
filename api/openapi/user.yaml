@@ -1,0 +1,80 @@
+openapi: 3.0.0
+info:
+  title: 用户api
+  version: 1.0.0
+  contact:
+    name: admin
+    email: admin@example.com
+  description: todo
+servers:
+  - url: "http://{hostname}:{port}/api/{basePath}"
+    description: todo
+    variables:
+      hostname:
+        default: localhost
+      port:
+        enum:
+          - "3000"
+          - "3001"
+        default: "3000"
+      basePath:
+        default: v1
+paths:
+  /users/current:
+    get:
+      summary: 获取当前用户
+      tags:
+        - user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      operationId: get-users-current
+      description: 获取当前用户
+      security: []
+    parameters: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      properties:
+        displayName:
+          type: string
+        balance:
+          type: integer
+        role:
+          type: string
+      required:
+        - displayName
+        - balance
+        - role
+    Error:
+      title: Error
+      type: object
+      properties:
+        slug:
+          type: string
+        message:
+          type: string
+      required:
+        - slug
+        - message
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+  - name: user
+security:
+  - bearerAuth: []
