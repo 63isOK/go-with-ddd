@@ -7,7 +7,7 @@ info:
     email: admin@example.com
   description: todo
 servers:
-  - url: "http://{hostname}:{port}/api/{basePath}"
+  - url: http://{hostname}:{port}/api/{basePath}
     description: todo
     variables:
       hostname:
@@ -24,7 +24,7 @@ paths:
     get:
       summary: 获取当前用户
       tags:
-        - user
+        - users
       responses:
         "200":
           description: OK
@@ -75,6 +75,6 @@ components:
       scheme: bearer
       bearerFormat: JWT
 tags:
-  - name: user
+  - name: users
 security:
   - bearerAuth: []

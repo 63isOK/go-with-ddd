@@ -1,0 +1,160 @@
+openapi: 3.0.0
+info:
+  title: 训练者日历
+  version: 1.0.0
+  contact:
+    name: admin
+    email: admin@example.com
+  description: 训练者日历api
+servers:
+  - url: "http://{hostname}:{port}/api/{basePath}"
+    variables:
+      hostname:
+        default: localhost
+      port:
+        default: "8080"
+      basePath:
+        default: v1
+paths:
+  "/trainer/calendar/{dateFrom}/{dateTo}":
+    get:
+      summary: 训练日历
+      tags:
+        - trainer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Date"
+        default:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./user.yaml#/components/schemas/Error
+      operationId: get-trainer-calendar
+      description: 获取训练日历
+    parameters:
+      - schema:
+          type: string
+          format: date-time
+        name: dateFrom
+        in: path
+        required: true
+      - schema:
+          type: string
+          format: date-time
+        name: dateTo
+        in: path
+        required: true
+  /trainer/calendar/make-hour-available:
+    put:
+      summary: 指定训练时间段
+      operationId: put-trainer-calendar-make-hour-available
+      responses:
+        "204":
+          description: No Content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Date"
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: ./user.yaml#/components/schemas/Error
+          description: 非预期错误
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HourUpdate"
+      description: 指定训练时间段
+      tags:
+        - trainer
+  /trainer/calendar/make-hour-unavailable:
+    put:
+      summary: 取消训练时间段
+      operationId: put-trainer-calendar-make-hour-unavailable
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Date"
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: ./user.yaml#/components/schemas/Error
+          description: 未预期错误
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HourUpdate"
+        description: ""
+      tags:
+        - trainer
+      description: 取消训练时间段
+components:
+  schemas:
+    Date:
+      title: Date
+      type: object
+      properties:
+        date:
+          type: string
+          description: ""
+          example: "2021-08-15"
+          format: date
+        hasFreeHours:
+          type: boolean
+        hours:
+          type: array
+          items:
+            $ref: "#/components/schemas/Hour"
+    Hour:
+      title: Hour
+      type: object
+      properties:
+        hour:
+          type: string
+          format: date-time
+        available:
+          type: boolean
+        hasTrainingScheduled:
+          type: boolean
+      required:
+        - hour
+        - available
+        - hasTrainingScheduled
+    HourUpdate:
+      title: HourUpdate
+      type: object
+      properties:
+        hours:
+          type: array
+          items:
+            type: string
+            format: date-time
+      required:
+        - hours
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+tags:
+  - name: trainer
